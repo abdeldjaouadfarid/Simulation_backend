@@ -43,39 +43,33 @@
 
 
 
--- 1. مسح الجداول القديمة لضمان نظافة البيانات
 DROP TABLE IF EXISTS animals;
 DROP TABLE IF EXISTS geofences;
-
--- 2. تفعيل إضافة PostGIS
+s
 CREATE EXTENSION IF NOT EXISTS postgis;
 
--- 3. إنشاء جدول السياج
 CREATE TABLE geofences (
   id      SERIAL PRIMARY KEY,
   name    VARCHAR(100),
   zone    GEOMETRY(Polygon, 4326)
 );
 
--- 4. إنشاء جدول الحيوانات
 CREATE TABLE animals (
   id               SERIAL PRIMARY KEY,
   name             VARCHAR(100),
   species          VARCHAR(100),
   current_location GEOMETRY(Point, 4326),
-  speed            NUMERIC DEFAULT 0.0001, -- سرعة تناسب المسيلة
+  speed            NUMERIC DEFAULT 0.0001, 
   status           VARCHAR(20) DEFAULT 'safe',
   is_panic         BOOLEAN DEFAULT false,
   panic_direction  JSONB
 );
 
--- 5. إضافة سياج المسيلة (تأكد من ترتيب Longitude ثم Latitude)
 INSERT INTO geofences (name, zone) VALUES (
   'M''sila Pasture',
   ST_GeomFromText('POLYGON((4.4100 35.6500, 4.4500 35.6500, 4.4500 35.6800, 4.4100 35.6800, 4.4100 35.6500))', 4326)
 );
 
--- 6. إضافة الحيوانات داخل سياج المسيلة (إحداثيات قريبة من 4.43 و 35.66)
 INSERT INTO animals (name, species, current_location) VALUES
   ('Leo',   'Sheep',  ST_SetSRID(ST_MakePoint(4.4200, 35.6600), 4326)),
   ('Nala',  'Cow',    ST_SetSRID(ST_MakePoint(4.4300, 35.6650), 4326)),
