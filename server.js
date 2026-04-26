@@ -45,13 +45,13 @@ io.on('connection', (socket) => {
 //   4. Save the new position to the database
 //   5. Send all positions to the React frontend via Socket.io
 
-const TICK_MS = 1500          // how often the simulator runs (milliseconds)
-const STEP    = 0.0005        // how far an animal moves each tick (in degrees)
-const PANIC_SPEED = 8         // how many times faster in panic mode
+const TICK_MS = 1000          // how often the simulator runs (milliseconds)
+const STEP    = 0.0001        // how far an animal moves each tick (in degrees)
+const PANIC_SPEED = 50         // how many times faster in panic mode
 
 setInterval(async () => {
   try {
-    // Step 1 — get all animals
+    //  get all animals
     const animalsResult = await pool.query(`
       SELECT id, name, is_panic, panic_direction,
              ST_X(current_location) AS longitude,
@@ -113,7 +113,7 @@ setInterval(async () => {
       })
     }
 
-    // Step 5 — send all updated positions to the frontend
+    //  send all updated positions to the frontend
     io.emit('LOCATION_UPDATE', updatedAnimals)
 
     // Also send an alert if any animal left the safe zone
